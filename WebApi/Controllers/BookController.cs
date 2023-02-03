@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]s")]
 public class BookController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
