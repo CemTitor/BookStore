@@ -15,21 +15,21 @@ public class BookController : ControllerBase
             Title="The Fountainhead",
             GenreId=1,
             PageCount=500,
-            PublishDate=DateTime.Now.AddYears(-10), 
+            PublishDate=DateTime.Now.AddYears(-10),
         },
         new Book{
             Id =2,
             Title="Herland",
             GenreId=2,
             PageCount=250,
-            PublishDate=DateTime.Now.AddYears(-10), 
+            PublishDate=DateTime.Now.AddYears(-10),
         },
         new Book{
             Id =3,
             Title="Dune",
             GenreId=2,
             PageCount=600,
-            PublishDate=DateTime.Now.AddYears(-10), 
+            PublishDate=DateTime.Now.AddYears(-10),
         }
 
     };
@@ -45,49 +45,78 @@ public class BookController : ControllerBase
     [HttpGet]
     public List<Book> GetBooks()
     {
-        var bookList= BookList.OrderBy(x => x.Id).ToList<Book>();
+        var bookList = BookList.OrderBy(x => x.Id).ToList<Book>();
         return bookList;
     }
 
-//      //Book?id=3
-//    [HttpGet]
-//     public Book GetById2([FromQuery] string id)
-//     {
-//         var book= BookList.Where(book => book.Id == Convert.ToInt32(id)).SingleOrDefault();
-//         return book;
-//     }
+    //      //Book?id=3
+    //    [HttpGet]
+    //     public Book GetById2([FromQuery] string id)
+    //     {
+    //         var book= BookList.Where(book => book.Id == Convert.ToInt32(id)).SingleOrDefault();
+    //         return book;
+    //     }
 
 
-    //Book/3 
+    // //Book/3 
+    // [HttpGet("{id}")]
+    // public Book GetById(int id)
+    // {
+    //     var book = BookList.Where(book => book.Id == id).SingleOrDefault();
+    //     return book;
+    // }
+
+
     [HttpGet("{id}")]
-    public Book GetById(int id)
+    public IActionResult GetById(int id)
     {
-        var book= BookList.Where(book => book.Id == id).SingleOrDefault();
-        return book;
+        if (id <= 0)
+        {
+            return BadRequest("Id must be greater than 0");
+        }
+        var book = BookList.SingleOrDefault(x => x.Id == id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(book);
     }
-   
-   
+
+
 
     [HttpPost]
     public IActionResult AddBook([FromBody] Book newBook)
     {
-        var book =BookList.SingleOrDefault(x => x.Title == newBook.Title);
-        if(book != null)
+        if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest(ModelState);
         }
+
+        var book = BookList.SingleOrDefault(x => x.Title == newBook.Title);
+        if (book != null)
+        {
+            return BadRequest("A book with the same title already exists.");
+        }
+
         BookList.Add(newBook);
         return Ok();
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateBook(int id,[FromBody] Book updatedBook)
+    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
     {
-        var book =BookList.SingleOrDefault(x => x.Id == id);
-        if(book is null)
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var book = BookList.SingleOrDefault(x => x.Id == id);
+        if (book is null)
         {
             return BadRequest();
         }
+
         book.Title = updatedBook.Title != default ? updatedBook.Title : book.Title;
         book.GenreId = updatedBook.GenreId != default ? updatedBook.GenreId : book.GenreId;
         book.PageCount = updatedBook.PageCount != default ? updatedBook.PageCount : book.PageCount;
@@ -98,16 +127,19 @@ public class BookController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteBook(int id)
     {
-        var book =BookList.SingleOrDefault(x => x.Id == id);
-        if(book is null)
+        if (id <= 0)
         {
-            return BadRequest();
+            return BadRequest("Id must be greater than 0");
         }
+        var book = BookList.SingleOrDefault(x => x.Id == id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
         BookList.Remove(book);
         return Ok();
     }
 
-
-    
 
 }
