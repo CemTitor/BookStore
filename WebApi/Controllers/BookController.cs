@@ -52,7 +52,7 @@ public class BookController : ControllerBase
         }
         return Ok(bookList);
     }
-    
+
     [HttpGet("{id}")]
     public IActionResult GetBookById([FromRoute] int id)
     {
@@ -67,6 +67,17 @@ public class BookController : ControllerBase
         }
 
         return Ok(book);
+    }
+
+    [HttpGet("list")]
+    public IActionResult GetBooksByName([FromQuery] string bookName)
+    {
+        var bookList = BookList.Where(x => x.Title.ToUpper().Contains(bookName.ToUpper())).OrderBy(x => x.Title).ToList<Book>();
+        if (bookList == null)
+        {
+            return NotFound();
+        }
+        return Ok(bookList);
     }
 
     [HttpPost("FromBody")]
