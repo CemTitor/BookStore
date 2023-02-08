@@ -43,32 +43,18 @@ public class BookController : ControllerBase
     }
 
     [HttpGet]
-    public List<Book> GetBooks()
+    public IActionResult GetBooks()
     {
         var bookList = BookList.OrderBy(x => x.Id).ToList<Book>();
-        return bookList;
+        if (bookList == null)
+        {
+            return NotFound();
+        }
+        return Ok(bookList);
     }
-
-    //      //Book?id=3
-    //    [HttpGet]
-    //     public Book GetById2([FromQuery] string id)
-    //     {
-    //         var book= BookList.Where(book => book.Id == Convert.ToInt32(id)).SingleOrDefault();
-    //         return book;
-    //     }
-
-
-    // //Book/3 
-    // [HttpGet("{id}")]
-    // public Book GetById(int id)
-    // {
-    //     var book = BookList.Where(book => book.Id == id).SingleOrDefault();
-    //     return book;
-    // }
-
-
+    
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public IActionResult GetBookById([FromRoute] int id)
     {
         if (id <= 0)
         {
@@ -83,10 +69,8 @@ public class BookController : ControllerBase
         return Ok(book);
     }
 
-
-
-    [HttpPost]
-    public IActionResult AddBook([FromBody] Book newBook)
+    [HttpPost("FromBody")]
+    public IActionResult AddBookBody([FromBody] Book newBook)
     {
         if (!ModelState.IsValid)
         {
@@ -104,7 +88,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+    public IActionResult UpdateBookBody(int id, [FromBody] Book updatedBook)
     {
         if (!ModelState.IsValid)
         {
@@ -126,6 +110,23 @@ public class BookController : ControllerBase
 
     [HttpDelete("{id}")]
     public IActionResult DeleteBook(int id)
+    {
+        if (id <= 0)
+        {
+            return BadRequest("Id must be greater than 0");
+        }
+        var book = BookList.SingleOrDefault(x => x.Id == id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
+        BookList.Remove(book);
+        return Ok();
+    }
+
+    [HttpDelete("FromQuery")]
+    public IActionResult DeleteBookFromQuery([FromQuery] int id)
     {
         if (id <= 0)
         {
