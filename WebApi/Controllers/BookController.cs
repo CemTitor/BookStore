@@ -70,7 +70,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPost("FromBody")]
-    public IActionResult AddBookBody([FromBody] Book newBook)
+    public IActionResult AddBook([FromBody] Book newBook)
     {
         if (!ModelState.IsValid)
         {
@@ -88,7 +88,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateBookBody(int id, [FromBody] Book updatedBook)
+    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
     {
         if (!ModelState.IsValid)
         {
