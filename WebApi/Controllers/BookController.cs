@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
-[ApiController]
-[Route("[controller]s")]
+[ApiController] // This is a controller that will be used to handle API requests, controller actions will return an Http response
+[Route("[controller]s")] // Which controller will meet the requests coming to the WebApi is determined by these route attributes.
+//Resource name: Book
 public class BookController : ControllerBase
 {
     private static List<Book> BookList = new List<Book>(){
@@ -35,18 +36,29 @@ public class BookController : ControllerBase
 
     private readonly ILogger<BookController> _logger;
 
+    // The constructor is used to inject dependencies( like ILogger<BookController>) into the controller
     public BookController(ILogger<BookController> logger)
     {
         _logger = logger;
     }
 
-    // [HttpGet]
-    // public List<Book> GetBooks()
-    // {
-    //     var bookList= BookList.OrderBy(x => x.Id).ToList<Book>();
-    //     return bookList;
-    // }
+    [HttpGet]
+    public List<Book> GetBooks()
+    {
+        var bookList= BookList.OrderBy(x => x.Id).ToList<Book>();
+        return bookList;
+    }
 
+//      //Book?id=3
+//    [HttpGet]
+//     public Book GetById2([FromQuery] string id)
+//     {
+//         var book= BookList.Where(book => book.Id == Convert.ToInt32(id)).SingleOrDefault();
+//         return book;
+//     }
+
+
+    //Book/3 
     [HttpGet("{id}")]
     public Book GetById(int id)
     {
@@ -54,12 +66,21 @@ public class BookController : ControllerBase
         return book;
     }
    
-   [HttpGet]
-    public Book Get([FromQuery] string id)
+   
+
+    [HttpPost]
+    public IActionResult AddBook([FromBody] Book newBook)
     {
-        var book= BookList.Where(book => book.Id == Convert.ToInt32(id)).SingleOrDefault();
-        return book;
+        var book =BookList.SingleOrDefault(x => x.Title == newBook.Title);
+        if(book != null)
+        {
+            return BadRequest();
+        }
+        BookList.Add(newBook);
+        return Ok();
     }
+
+
     
 
 }
