@@ -69,17 +69,6 @@ public class BookController : ControllerBase
         return Ok(book);
     }
 
-    [HttpGet("list")]
-    public IActionResult GetBooksByName([FromQuery] string bookName)
-    {
-        var bookList = BookList.Where(x => x.Title.ToUpper().Contains(bookName.ToUpper())).OrderBy(x => x.Title).ToList<Book>();
-        if (bookList == null)
-        {
-            return NotFound();
-        }
-        return Ok(bookList);
-    }
-
     [HttpPost("FromBody")]
     public IActionResult AddBookBody([FromBody] Book newBook)
     {
@@ -151,6 +140,43 @@ public class BookController : ControllerBase
 
         BookList.Remove(book);
         return Ok();
+    }
+
+    [HttpGet("list")]
+    public IActionResult GetBooksByName([FromQuery] string bookName)
+    {
+        var bookList = BookList.Where(x => x.Title.ToUpper().Contains(bookName.ToUpper())).OrderBy(x => x.Title).ToList<Book>();
+        if (bookList == null)
+        {
+            return NotFound();
+        }
+        return Ok(bookList);
+    }
+
+    [HttpGet("sorting_desc")]
+    public IActionResult GetBooksDesc()
+    {
+        var bookList = BookList.ToList<Book>();
+        if (bookList == null)
+        {
+            return NotFound();
+        }
+
+        bookList = bookList.OrderByDescending(b => b.PageCount).ToList();
+        return Ok(bookList);
+    }
+
+    [HttpGet("sorting_asc")]
+    public IActionResult GetBooksAsc()
+    {
+        var bookList = BookList.ToList<Book>();
+        if (bookList == null)
+        {
+            return NotFound();
+        }
+
+        bookList = bookList.OrderBy(b => b.PageCount).ToList();
+        return Ok(bookList);
     }
 
 
