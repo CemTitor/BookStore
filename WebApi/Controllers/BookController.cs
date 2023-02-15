@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
-[ApiController] // This is a controller that will be used to handle API requests, controller actions will return an Http response
+[ApiController] // This This is a controller that will be used to handle API requests, controller actions will return an Http response
 [Route("[controller]s")] // Which controller will meet the requests coming to the WebApi is determined by these route attributes.
 //Resource name: Book
 public class BookController : ControllerBase
